@@ -35,10 +35,12 @@ parent = ""
 class Visitor(ast.NodeVisitor):
 
     def visit_Assign(self, node: ast.AST):
-        # pprint(ast.dump(node.value), indent=4)
         global parent, obj
         if isinstance(node.value, ast.Call):
-            parent = node.value.func.id
+            if isinstance(node.value.func, ast.Name):
+                parent = node.value.func.id
+            elif isinstance(node.value.func, ast.Attribute):
+                parent = node.value.func.value.id
 
         for item in node.targets:
             if isinstance(item, ast.Name):
@@ -96,11 +98,11 @@ class Visitor(ast.NodeVisitor):
 
 
 def main():
-    with open('calculator.py') as f:
+    with open('vehicle.py.py') as f:
         code = f.read()
 
     node = ast.parse(code)
-    # pprint(ast.dump(node, indent=4))
+    # print(ast.dump(node, indent=4))
     Visitor().visit(node)
 
     # for item in functionDefs: print("Function Def Start Line :", item.start, ", Function Name :", item.name, ",
@@ -113,7 +115,7 @@ def main():
             print("<<<--------------->>>")
             print("Function Call Start Line :", item.start)
             if item.attr:
-                print("Function Name :", item.attr)
+                print("Function Name :", item.attr, "|| called as :", item.name+"."+item.attr)
             else:
                 print("Function Name :", item.name)
             print("Function Params :", item.param)
@@ -148,7 +150,8 @@ def main():
         if item.name and tracked == 0:
             print("Comments : builtins or unable to track!")
 
-    print("")
+    # for item in objectMapper:
+    #     print(item.name, ":", item.parent)
 
 
 if __name__ == '__main__':
