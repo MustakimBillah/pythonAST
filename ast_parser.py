@@ -98,7 +98,7 @@ class Visitor(ast.NodeVisitor):
 
 
 def main():
-    with open('vehicle.py.py') as f:
+    with open('vehicle.py') as f:
         code = f.read()
 
     node = ast.parse(code)
